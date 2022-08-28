@@ -1,3 +1,4 @@
+from re import A
 import time
 import numpy as np
 from scipy.stats import norm
@@ -61,8 +62,16 @@ def calc(first_deposit, monthly_deposit, interest_rate, volatility, dynamic, yea
 if __name__ == '__main__':
     start_time = time.time()
 
+    first_deposit = int(input("Первый взнос "))
+    monthly_deposit = int(input("Ежемесячный взнос "))
+    interest_rate = float(input("Процентная ставка /формат 0.067% = 6.7% "))
+    volatility = float(input("Волатильность /формат 0.18% = 18% "))
+    dynamic = float(input("Динамика  /формат 0.02% = 2% "))
+    years_number = int(input("Лет "))
+    iter_number = int(input("Количество итераций метода Монте-Карло: "))
+
     percentiles = [99, 95, 75, 25, 5, 1]
-    novolatility_value, mean, median, percentile_vals = calc(20000, 7000./12., 0.067, 0.18, 0.02, 40, 10000, percentiles)
+    novolatility_value, mean, median, percentile_vals = calc(first_deposit, monthly_deposit, interest_rate, volatility, dynamic, years_number, iter_number, percentiles)
 
     print(f'[+] Нулевая волатильность: ')
     print(f'Значение: {novolatility_value:,.0f} {UOM}')
