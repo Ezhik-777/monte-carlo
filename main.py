@@ -62,11 +62,14 @@ def calc(first_deposit, monthly_deposit, interest_rate, volatility, dynamic, yea
 if __name__ == '__main__':
     start_time = time.time()
 
-    first_deposit = int(input("Первый взнос "))
-    monthly_deposit = int(input("Ежемесячный взнос "))
-    interest_rate = float(input("Процентная ставка /формат 0.067% = 6.7% "))
-    volatility = float(input("Волатильность /формат 0.18% = 18% "))
-    dynamic = float(input("Динамика  /формат 0.02% = 2% "))
+    first_deposit = float(input("Первый взнос "))
+    monthly_deposit = float(input("Ежемесячный взнос "))
+    interest_rate = float(input("Процентная ставка "))
+    interest_rate = interest_rate / 100.
+    volatility = float(input("Волатильность "))
+    volatility = volatility / 100.
+    dynamic = float(input("Динамика "))
+    dynamic = dynamic / 100.
     years_number = int(input("Лет "))
     iter_number = int(input("Количество итераций метода Монте-Карло: "))
 
