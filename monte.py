@@ -88,4 +88,4 @@ for i, perc in enumerate(percentile_vals[0]):
     print(f'Процентиль {percentiles[i]}%: {perc:,.0f} {UOM}')
 print()
 
-print("Время счета: %s секунд" % (time.time() - start_time))
+print("Время счета: %s секунд" % round(time.time() - start_time, 2))
