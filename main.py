@@ -1,5 +1,6 @@
 from re import A
 import time
+from sys import argv
 import numpy as np
 from scipy.stats import norm
 from joblib import Parallel, delayed
