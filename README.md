@@ -1,21 +1,38 @@
-usage: main.py [-h] -f FIRST_DEPOSIT -m MONTHLY_DEPOSIT -% INTEREST_RATE -v VOLATILITY -d DYNAMIC -y YEARS_NUMBER -i ITER_NUMBER
+usage: main.py [-h]() this message
+[-f]() FIRST \_DEPOSIT [-m]() MONTHLY\_DEPOSIT -% INTEREST\_RATE [-v]() VOLATILITY [-d]() DYNAMIC [-y]() YEARS\_NUMBER [-i]() ITER\_NUMBER
 
 monte-carlo калькулятор
 
 options:
   -h, --help            show this help message and exit
 
-  -f FIRST_DEPOSIT, --first_deposit FIRST_DEPOSIT
-                        **Первый взнос**
-  -m MONTHLY_DEPOSIT, --monthly_deposit MONTHLY_DEPOSIT
-                        Ежемесячный взнос**
-  -% INTEREST_RATE, --interest_rate INTEREST_RATE
-                        **Процентная ставка**
+  -f FIRST\_DEPOSIT, --first\_deposit FIRST\_DEPOSIT
+```html
+                    **Первый взнос**
+```
+  -m MONTHLY\_DEPOSIT, --monthly\_deposit
+```html
+                    Ежемесячный взнос**
+```
+  -% INTEREST\_RATE, --interest\_rate INTEREST\_RATE
+```html
+                    **Процентная ставка**
+```
   -v VOLATILITY, --volatility VOLATILITY
-                        **Волатильность**
+```html
+                    **Волатильность**
+```
   -d DYNAMIC, --dynamic DYNAMIC
-                        **Динамика**
-  -y YEARS_NUMBER, --years_number YEARS_NUMBER
-                        **Срок инвестирования (лет)**
-  -i ITER_NUMBER, --iter_number ITER_NUMBER
-                        **Количество итераций**
+```html
+                    **Динамика**
+```
+  -y YEARS\_NUMBER, --years\_number YEARS\_NUMBER
+```html
+                    **Срок инвестирования (лет)**
+```
+  -i ITER\_NUMBER, --iter\_number ITER\_NUMBER
+```html
+                    **Количество итераций**
+```
+
+
