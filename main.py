@@ -5,6 +5,8 @@ import numpy as np
 from scipy.stats import norm
 from joblib import Parallel, delayed
 
+UOM = '€'
+
 parser = argparse.ArgumentParser(description='monte-carlo калькулятор')
 parser.add_argument("-f", "--first_deposit", required=True, type=int, help="Первый взнос")
 parser.add_argument("-m", "--monthly_deposit", required=True, type=int, help="Ежемесячный взнос")
@@ -19,18 +21,25 @@ args = parser.parse_args()
 first_deposit = args.first_deposit
 monthly_deposit = args.monthly_deposit
 interest_rate = args.interest_rate / 100
-volatility = args.volatility/ 100
-dynamic = args.dynamic/ 100
+volatility = args.volatility / 100
+dynamic = args.dynamic / 100
 years_number = args.years_number
 iter_number = args.iter_number
 
-UOM = '€'
 
 def calc_ending_value(monthly_deposit, interest_rate, volatility, dynamic, ending_value):
+
+    # раскомментировать для повторяемости получаемых результатов при каждом запуске программы
+    # (оставил для проверки, раскомментировать не нужно)
+    # np.random.seed(33)
 
     norm_obr = interest_rate
 
     if volatility > 0:
+        '''
+        Ф-ция НОРМ.ОБР Excel - возвращает обратное кумулятивному распределению CFD
+        PPF - квантиль-функция расчета обратного нормального распределения
+        '''
         norm_obr = norm.ppf(np.random.random(), interest_rate, volatility)
 
     return ending_value * (1 + norm_obr) + (12. * monthly_deposit * (1 + dynamic))
@@ -40,6 +49,7 @@ def calc_last_ending_value(first_deposit, monthly_deposit, interest_rate, volati
     ending_value = first_deposit
     for i in range(0, years_number):
         ending_value = calc_ending_value(monthly_deposit, interest_rate, volatility, dynamic, ending_value)
+    # print(f'[debug] Сумма через {years_number} лет (0-я итерация Монте-Карло): {ending_value:,.0f} {UOM}')
     return ending_value
 
 
