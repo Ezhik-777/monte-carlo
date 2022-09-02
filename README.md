@@ -4,7 +4,6 @@
 
   -h, --help            show this help message and exit
 
-
   -f FIRST_DEPOSIT, --first_deposit
                         `Первый взнос`
 
