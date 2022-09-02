@@ -5,8 +5,6 @@ import numpy as np
 from scipy.stats import norm
 from joblib import Parallel, delayed
 
-UOM = '€'
-
 parser = argparse.ArgumentParser(description='monte-carlo калькулятор')
 parser.add_argument("-f", "--first_deposit", required=True, type=int, help="Первый взнос")
 parser.add_argument("-m", "--monthly_deposit", required=True, type=int, help="Ежемесячный взнос")
@@ -18,19 +16,21 @@ parser.add_argument("-i", "--iter_number", required=True, type=int, help="Кол
 
 args = parser.parse_args()
 
-def calc_ending_value(monthly_deposit, interest_rate, volatility, dynamic, ending_value):
+first_deposit = args.first_deposit
+monthly_deposit = args.monthly_deposit
+interest_rate = args.interest_rate / 100
+volatility = args.volatility/ 100
+dynamic = args.dynamic/ 100
+years_number = args.years_number
+iter_number = args.iter_number
 
-    # раскомментировать для повторяемости получаемых результатов при каждом запуске программы
-    # (оставил для проверки, раскомментировать не нужно)
-    # np.random.seed(33)
+UOM = '€'
+
+def calc_ending_value(monthly_deposit, interest_rate, volatility, dynamic, ending_value):
 
     norm_obr = interest_rate
 
     if volatility > 0:
-        '''
-        Ф-ция НОРМ.ОБР Excel - возвращает обратное кумулятивному распределению CFD
-        PPF - квантиль-функция расчета обратного нормального распределения
-        '''
         norm_obr = norm.ppf(np.random.random(), interest_rate, volatility)
 
     return ending_value * (1 + norm_obr) + (12. * monthly_deposit * (1 + dynamic))
@@ -40,7 +40,6 @@ def calc_last_ending_value(first_deposit, monthly_deposit, interest_rate, volati
     ending_value = first_deposit
     for i in range(0, years_number):
         ending_value = calc_ending_value(monthly_deposit, interest_rate, volatility, dynamic, ending_value)
-    # print(f'[debug] Сумма через {years_number} лет (0-я итерация Монте-Карло): {ending_value:,.0f} {UOM}')
     return ending_value
 
 
@@ -72,18 +71,6 @@ def calc(first_deposit, monthly_deposit, interest_rate, volatility, dynamic, yea
 
 if __name__ == '__main__':
     start_time = time.time()
-
-first_deposit = args.first_deposit
-monthly_deposit = args.monthly_deposit
-interest_rate = args.interest_rate
-interest_rate = interest_rate / 100
-volatility = args.volatility
-volatility = volatility / 100
-dynamic = args.dynamic
-dynamic = dynamic / 100
-years_number = args.years_number
-iter_number = args.iter_number
-
 
 percentiles = [99, 95, 75, 25, 5, 1]
 novolatility_value, mean, median, percentile_vals = calc(first_deposit, monthly_deposit, interest_rate, volatility, dynamic, years_number, iter_number, percentiles)
