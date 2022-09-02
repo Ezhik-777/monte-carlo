@@ -1,2 +1,4 @@
 cd /usr/local/bin
 ln -s /path/to/script.py
+
+mv script.py script
