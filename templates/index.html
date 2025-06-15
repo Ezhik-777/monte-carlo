@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Investment Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .preset-card { cursor: pointer; transition: all 0.2s; }
+        .preset-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .form-control-lg, .form-select-lg { padding: 0.75rem 1rem; font-size: 1.1rem; }
+        .badge-value { font-size: 1rem; padding: 0.5rem 1rem; }
+        .section-divider { height: 3px; background: linear-gradient(90deg, #007bff, #6f42c1, #e83e8c); border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row bg-dark text-white py-3 mb-4">
+            <div class="col-12">
+                <h2 class="mb-0">
+                    <i class="fas fa-chart-line me-3"></i>
+                    Калькулятор инвестиций Monte Carlo
+                </h2>
+                <p class="mb-0 opacity-75">Планирование ваших финансов с учетом рисков</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <!-- Calculation Mode -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-route me-2"></i>
+                            Что рассчитываем?
+                        </h5>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="d-grid gap-2">
+                            <input type="radio" class="btn-check" name="calculationMode" id="mode-accumulation" value="accumulation" checked>
+                            <label class="btn btn-outline-primary text-start p-3" for="mode-accumulation">
+                                <i class="fas fa-piggy-bank fa-lg me-3 text-primary"></i>
+                                <div>
+                                    <strong>Накопление капитала</strong>
+                                    <div class="small text-muted mt-1">Сколько будет денег через определенное время</div>
+                                </div>
+                            </label>
+
+                            <input type="radio" class="btn-check" name="calculationMode" id="mode-withdrawal" value="withdrawal">
+                            <label class="btn btn-outline-warning text-start p-3" for="mode-withdrawal">
+                                <i class="fas fa-wallet fa-lg me-3 text-warning"></i>
+                                <div>
+                                    <strong>Пенсионные выплаты</strong>
+                                    <div class="small text-muted mt-1">Сколько можно снимать в месяц с накопленного</div>
+                                </div>
+                            </label>
+
+                            <input type="radio" class="btn-check" name="calculationMode" id="mode-mixed" value="mixed">
+                            <label class="btn btn-outline-success text-start p-3" for="mode-mixed">
+                                <i class="fas fa-chart-line fa-lg me-3 text-success"></i>
+                                <div>
+                                    <strong>Полный план</strong>
+                                    <div class="small text-muted mt-1">Накопление + пенсионные выплаты</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presets -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>
+                            Готовые стратегии
+                        </h5>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="small text-muted mb-3 px-2">Выберите подходящую стратегию для автозаполнения</div>
+                        <div class="d-grid gap-2">
+                            {% for key, preset in presets.items() %}
+                            <button type="button" class="btn btn-outline-secondary text-start preset-card p-3" data-preset="{{ key }}">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-{{ preset.icon }} fa-lg me-3" style="color: {{ preset.color }}"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold">{{ preset.name }}</div>
+                                        <div class="small text-muted">{{ preset.description[:50] }}...</div>
+                                        <span class="badge mt-1" style="background-color: {{ preset.color }}20; color: {{ preset.color }}">
+                                            {{ preset.interest_rate_mean }}% доходность
+                                        </span>
+                                    </div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary btn-lg" id="calculateBtn">
+                        <i class="fas fa-calculator me-2"></i>
+                        Рассчитать
+                        <div class="spinner-border spinner-border-sm ms-2 d-none" id="loadingSpinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Basic Parameters -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-coins me-2"></i>
+                            Основные параметры
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-euro-sign me-2 text-success"></i>
+                                    Начальная сумма
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control" id="initialAmount" value="10000" min="0" step="1000">
+                                    <span class="input-group-text">€</span>
+                                </div>
+                                <div class="form-text">Сумма, которая у вас есть сейчас для инвестирования</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-calendar-plus me-2 text-info"></i>
+                                    Ежемесячные взносы
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control" id="monthlyDeposit" value="500" min="0" step="50">
+                                    <span class="input-group-text">€/месяц</span>
+                                </div>
+                                <div class="form-text">Сколько планируете инвестировать каждый месяц</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider my-4"></div>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-clock me-2 text-primary"></i>
+                                    Период накопления
+                                </label>
+                                <input type="range" class="form-range mb-3" id="accumulationYears" min="1" max="50" value="20">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">1 год</small>
+                                    <span class="badge bg-primary badge-value" id="accumulationYears-value">20 лет</span>
+                                    <small class="text-muted">50 лет</small>
+                                </div>
+                                <div class="form-text">Как долго планируете копить деньги</div>
+                            </div>
+                            
+                            <div class="col-md-6" id="withdrawalYearsContainer" style="display: none;">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-piggy-bank me-2 text-warning"></i>
+                                    Период снятий
+                                </label>
+                                <input type="range" class="form-range mb-3" id="withdrawalYears" min="10" max="50" value="30">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">10 лет</small>
+                                    <span class="badge bg-warning badge-value" id="withdrawalYears-value">30 лет</span>
+                                    <small class="text-muted">50 лет</small>
+                                </div>
+                                <div class="form-text">Сколько лет планируете тратить накопления</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Parameters -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-area me-2"></i>
+                            Ожидаемая доходность портфеля
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4 text-center">
+                                <label class="form-label fw-semibold text-danger">В плохие годы</label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control text-center" id="interestRateMin" value="-10.0" min="-50" max="50" step="0.1">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <small class="text-muted">Может быть убыток</small>
+                            </div>
+                            
+                            <div class="col-md-4 text-center">
+                                <label class="form-label fw-semibold text-success">В среднем за год</label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control text-center fw-bold border-success" id="interestRateMean" value="7.5" min="-50" max="50" step="0.1">
+                                    <span class="input-group-text bg-success text-white">%</span>
+                                </div>
+                                <small class="text-success">Ожидаемая доходность</small>
+                            </div>
+                            
+                            <div class="col-md-4 text-center">
+                                <label class="form-label fw-semibold text-primary">В хорошие годы</label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control text-center" id="interestRateMax" value="25.0" min="-50" max="100" step="0.1">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <small class="text-muted">Максимальная прибыль</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Риск портфеля:</strong> Умеренный (волатильность 15% ± 5%)
+                                <div class="small mt-1">Это означает, что доходность может колебаться, но в долгосрочной перспективе стремится к среднему значению</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economic Parameters -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-globe me-2"></i>
+                            Дополнительные условия
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-arrow-trend-up me-2 text-info"></i>
+                                    Инфляция в год
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control" id="inflationRate" value="2.5" min="0" max="10" step="0.1">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">Обычно 2-3% в развитых странах. Учитывается при расчете реальной покупательной способности</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-receipt me-2 text-warning"></i>
+                                    Налог на прибыль
+                                </label>
+                                <select class="form-select form-select-lg" id="taxSystem">
+                                    <option value="german" selected>Германия (26.375%)</option>
+                                    <option value="simple">Другая страна (настроить)</option>
+                                    <option value="none">Без налогов</option>
+                                </select>
+                                <div class="form-text">Налог применяется только к прибыли, не к основной сумме</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monte Carlo Settings -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-dice me-2"></i>
+                            Настройки симуляции Monte Carlo
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-repeat me-2 text-info"></i>
+                                    Количество сценариев (итераций)
+                                </label>
+                                <select class="form-select form-select-lg" id="iterations">
+                                    <option value="1000">1,000 сценариев (быстро, ~5 сек)</option>
+                                    <option value="5000">5,000 сценариев (обычно, ~10 сек)</option>
+                                    <option value="10000" selected>10,000 сценариев (точно, ~20 сек)</option>
+                                    <option value="25000">25,000 сценариев (максимум, ~45 сек)</option>
+                                    <option value="50000">50,000 сценариев (профессионально, ~90 сек)</option>
+                                </select>
+                                <div class="form-text">
+                                    Больше сценариев = более точный результат, но дольше расчет. 
+                                    Monte Carlo моделирует случайные варианты развития рынка.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-5">
+                                    <i class="fas fa-wave-square me-2 text-warning"></i>
+                                    Волатильность (риск)
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control text-center" id="volatilityMean" value="15.0" min="0" max="100" step="0.5">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">
+                                    Как сильно колеблется доходность.
+                                    <br><strong>5-10%</strong> = низкий риск
+                                    <br><strong>15-20%</strong> = умеренный 
+                                    <br><strong>25%+</strong> = высокий риск
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Важно:</strong> Monte Carlo показывает множество возможных сценариев будущего на основе исторических данных.
+                                Прошлые результаты не гарантируют будущую доходность.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="d-none">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Результаты расчета
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center g-4 mb-4">
+                                <div class="col-md-3">
+                                    <div class="h2 text-primary mb-1" id="totalInvested">—</div>
+                                    <small class="text-muted">Общие инвестиции</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="h2 text-success mb-1" id="expectedValue">—</div>
+                                    <small class="text-muted">Ожидаемая стоимость</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="h2 text-info mb-1" id="monthlyIncome">—</div>
+                                    <small class="text-muted">Ежемесячный доход</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="h2 text-warning mb-1" id="successProbability">—</div>
+                                    <small class="text-muted">Вероятность успеха</small>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container mb-4">
+                                <canvas id="mainChart" style="height: 400px;"></canvas>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>Детали расчета:</h6>
+                                    <div id="calculationDetails" class="alert alert-info">
+                                        Результаты расчета появятся здесь после нажатия кнопки "Рассчитать"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden advanced fields -->
+    <input type="hidden" id="volatilityMin" value="5.0">
+    <input type="hidden" id="volatilityMax" value="25.0">
+    <input type="hidden" id="inflationVolatility" value="1.0">
+    <input type="hidden" id="taxRate" value="26.375">
+    <input type="hidden" id="managementFee" value="0.5">
+    <input type="hidden" id="depositType" value="monthly">
+    <input type="hidden" id="targetWithdrawalRate" value="4.0">
+    <input type="hidden" id="withdrawalStrategy" value="fixed_percentage">
+    <input type="hidden" id="considerSequenceRisk" value="true">
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

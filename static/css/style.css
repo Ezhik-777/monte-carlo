@@ -1,0 +1,519 @@
+/* Advanced Monte Carlo Calculator - Enhanced Styles */
+
+/* Import base styles */
+@import url('style.css');
+
+/* Advanced-specific variables */
+:root {
+    --advanced-primary: #1a237e;
+    --advanced-secondary: #283593;
+    --advanced-accent: #3f51b5;
+    --advanced-success: #2e7d32;
+    --advanced-warning: #f57c00;
+    --advanced-danger: #c62828;
+    --advanced-info: #0277bd;
+    --advanced-dark: #263238;
+    --advanced-light: #eceff1;
+    --gradient-primary: linear-gradient(135deg, var(--advanced-primary), var(--advanced-accent));
+    --gradient-dark: linear-gradient(135deg, var(--advanced-dark), #37474f);
+}
+
+/* Hero section styling */
+.hero-section {
+    background: var(--gradient-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+    pointer-events: none;
+}
+
+/* Feature badges */
+.feature-badges {
+    animation: float 6s ease-in-out infinite;
+}
+
+.feature-badges .badge {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+}
+
+/* Preset cards */
+.preset-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.preset-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.preset-card:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.preset-card.active {
+    background: #e3f2fd;
+    border-color: var(--advanced-primary);
+    transform: translateX(8px);
+}
+
+.preset-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Parameter tabs */
+.nav-tabs {
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #666;
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: var(--advanced-primary);
+    background: rgba(63, 81, 181, 0.05);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--advanced-primary);
+    background: white;
+    border-color: var(--advanced-primary) var(--advanced-primary) white;
+    border-width: 2px 2px 2px 2px;
+    margin-bottom: -2px;
+}
+
+/* Range sliders */
+.form-range {
+    height: 6px;
+}
+
+.form-range::-webkit-slider-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--advanced-primary);
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.form-range::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--advanced-primary);
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Range visualizations */
+.range-visualization {
+    height: 100px;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.range-visualization canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Radio button groups */
+.btn-check:checked + .btn-outline-primary {
+    background: var(--advanced-primary);
+    border-color: var(--advanced-primary);
+}
+
+.btn-check:checked + .btn-outline-warning {
+    background: var(--advanced-warning);
+    border-color: var(--advanced-warning);
+}
+
+.btn-check:checked + .btn-outline-success {
+    background: var(--advanced-success);
+    border-color: var(--advanced-success);
+}
+
+/* Form enhancements */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--advanced-primary);
+    box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--advanced-primary);
+    border-color: var(--advanced-primary);
+}
+
+/* Card enhancements */
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: var(--gradient-primary);
+    border-bottom: none;
+    color: white;
+}
+
+/* Results section */
+#resultsSection {
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 400px;
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Statistics panels */
+.stats-panel {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--advanced-primary);
+}
+
+/* SWR Analysis */
+.swr-gauge {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.swr-info {
+    border-left: 4px solid var(--advanced-info);
+}
+
+/* Risk metrics */
+.risk-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.risk-low { background: var(--advanced-success); }
+.risk-medium { background: var(--advanced-warning); }
+.risk-high { background: var(--advanced-danger); }
+
+/* Progress bars */
+.progress {
+    height: 1.2rem;
+    border-radius: 0.6rem;
+}
+
+.progress-bar {
+    border-radius: 0.6rem;
+    transition: width 0.6s ease;
+}
+
+/* Modal enhancements */
+.modal-content {
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: var(--gradient-primary);
+    color: white;
+    border-bottom: none;
+}
+
+/* Comparison table */
+.comparison-table {
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.comparison-table th {
+    background: var(--advanced-light);
+    color: var(--advanced-dark);
+    font-weight: 600;
+    text-align: center;
+    padding: 1rem;
+    border: none;
+}
+
+.comparison-table td {
+    text-align: center;
+    padding: 0.75rem;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Tooltips */
+.tooltip-inner {
+    background: var(--advanced-dark);
+    color: white;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Loading states */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    z-index: 10;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.3rem solid #f3f3f3;
+    border-top: 0.3rem solid var(--advanced-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Sticky sidebar */
+.sticky-top {
+    position: sticky;
+    top: 1rem;
+    z-index: 5;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .preset-container {
+        max-height: 300px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        padding: 0.5rem;
+    }
+    
+    .feature-badges {
+        margin-top: 1rem;
+    }
+    
+    .feature-badges .badge {
+        display: block;
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .stat-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .display-5 {
+        font-size: 1.75rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .preset-card {
+        padding: 0.75rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .btn,
+    .card-header .nav-tabs,
+    #parameterTabs,
+    .sticky-top {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+    
+    .chart-container {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --advanced-light: #263238;
+        --advanced-dark: #eceff1;
+    }
+    
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+    
+    .card {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+    
+    .preset-card {
+        background: #1e1e1e;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .preset-card:hover {
+        background: #252525;
+    }
+    
+    .form-control,
+    .form-select {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .stats-panel {
+        background: #1e1e1e;
+        border-color: #333;
+    }
+}
+
+/* Accessibility improvements */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    outline: 2px solid var(--advanced-primary);
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid #000;
+    }
+    
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    .form-control,
+    .form-select {
+        border: 2px solid #000;
+    }
+}
