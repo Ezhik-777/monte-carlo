@@ -66,11 +66,11 @@ pip install --upgrade pip
 
 # Install dependencies
 print_info "Installing dependencies..."
-if [ -f "requirements-web.txt" ]; then
-    pip install -r requirements-web.txt
+if [ -f "requirements-advanced.txt" ]; then
+    pip install -r requirements-advanced.txt
     print_status "Dependencies installed successfully"
 else
-    print_error "requirements-web.txt not found"
+    print_error "requirements-advanced.txt not found"
     exit 1
 fi
 
