@@ -157,14 +157,16 @@ class AdvancedMonteCarloCalculator:
         after_tax_amounts = self._apply_tax_calculation(final_amounts, params)
         tax_stats = self._calculate_statistics(after_tax_amounts, params.confidence_levels)
         
+        total_invested = self._calculate_total_invested(params)
+        
         return {
             'final_amounts': final_amounts[:1000],  # Limit for web transfer
             'monthly_progression': self._aggregate_monthly_data(monthly_data),
             'nominal_stats': stats,
             'real_stats': real_stats,
             'after_tax_stats': tax_stats,
-            'total_invested': self._calculate_total_invested(params),
-            'inflation_impact': self._calculate_inflation_impact(stats, real_stats),
+            'total_invested': total_invested,
+            'inflation_impact': self._calculate_inflation_impact(stats, real_stats, total_invested),
             'tax_impact': self._calculate_tax_impact(stats, tax_stats),
             'final_amount_mean': stats['mean']
         }
@@ -769,7 +771,7 @@ class AdvancedMonteCarloCalculator:
             }
         }
     
-    def _calculate_inflation_impact(self, nominal_stats: Dict, real_stats: Dict) -> Dict:
+    def _calculate_inflation_impact(self, nominal_stats: Dict, real_stats: Dict, total_invested: float) -> Dict:
         """Calculate inflation impact analysis."""
         nominal_mean = nominal_stats['mean']
         real_mean = real_stats['mean']
@@ -778,7 +780,7 @@ class AdvancedMonteCarloCalculator:
             'nominal_value': nominal_mean,
             'real_value': real_mean,
             'purchasing_power_loss': (1 - real_mean / nominal_mean) * 100 if nominal_mean > 0 else 0,
-            'real_return_percent': (real_mean / nominal_stats.get('invested', nominal_mean) - 1) * 100 if nominal_stats.get('invested', nominal_mean) > 0 else 0
+            'real_return_percent': (real_mean / total_invested - 1) * 100 if total_invested > 0 else 0
         }
     
     def _calculate_tax_impact(self, pre_tax_stats: Dict, after_tax_stats: Dict) -> Dict:
